@@ -15,4 +15,10 @@ public class butt : MonoBehaviour
     {
         
     }
+
+    voit Timer()
+    {
+        int timer;
+        timer++;
+    }
 }
