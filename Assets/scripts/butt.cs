@@ -21,9 +21,9 @@ public class butt : MonoBehaviour
         // something
     }
 
-    voit Timer()
+    void Timer()
     {
-        int timer;
+        int timer = 9;
         timer++;
     }
 }
