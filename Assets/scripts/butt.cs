@@ -15,4 +15,9 @@ public class butt : MonoBehaviour
     {
         
     }
+
+    void Something()
+    {
+        // something
+    }
 }
