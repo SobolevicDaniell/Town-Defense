@@ -31,6 +31,7 @@ public class MainScript : MonoBehaviour
     public int Enemies = 1;
     public int FarmerConsumption = 1;
     public int WarriorConsumption = 2;
+    public int MaxQueue = 5;
 
     // Цены
     public int FarmerCost = 2;
@@ -119,7 +120,7 @@ public class MainScript : MonoBehaviour
             }
         }
 
-        if (Wheats < FarmerCost) // Проверка на взможность покупки фермеров
+        if (Wheats < FarmerCost || FarmersQueue > MaxQueue) // Проверка на взможность покупки фермеров
         { 
             FarmersButton.interactable = false; 
         } else { 
@@ -143,7 +144,7 @@ public class MainScript : MonoBehaviour
             }
         }
 
-        if (Wheats < WarriorsCost) // Проверка на взможность покупки воинов
+        if (Wheats < WarriorsCost || WarriorsQueue > MaxQueue) // Проверка на взможность покупки воинов
         {
             WarriorsButton.interactable = false;
         }
