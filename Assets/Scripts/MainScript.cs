@@ -27,10 +27,13 @@ public class MainScript : MonoBehaviour
     // Начальные настройки
     public int Wheats = 5;
     public int Farmers = 1;
-    public int Warriors = 0;
-    public int Enemies = 1;
     public int FarmerConsumption = 1;
+    public int Warriors = 0;
     public int WarriorConsumption = 2;
+    public int WarriorDmg = 3;
+    public int Enemies = 1;
+    public int EnemyDmg = 3;
+    public int EnemyHP = 3;
     public int MaxQueue = 5;
 
     // Цены
@@ -41,9 +44,9 @@ public class MainScript : MonoBehaviour
     public int FarmersProfit = 1;
     
     // Здоровье
-    public int FarmersLives = 1;
-    public int WarriorsLives = 3;
-    public int EnemiesLives = 3;
+    public int FarmerHP = 1;
+    public int WarriorHP = 3;
+    public int EnemysHP = 3;
 
     // Время
     public float WheatsTime = 5;
@@ -57,6 +60,11 @@ public class MainScript : MonoBehaviour
     int FarmersQueue;
     int WarriorsQueue;
     int WheatsToConsumption;
+    int EnemiesTotalDmg;
+    int EnemiesTotalHp;
+    int WarriorsTotalDmg;
+    int WarriorsTotalHP;
+    int FarmersTotalHP;
 
     // Флоаты
     float WheatsTimer;
@@ -64,8 +72,6 @@ public class MainScript : MonoBehaviour
     float WarriorsTimer;
     float WaveTimer;
     float ConsumptionTimer;
-
-    float TotalDamage;
 
     void Start()
     {
@@ -85,10 +91,10 @@ public class MainScript : MonoBehaviour
     void Update()
     {
         WheatsGenerator();
-        Wave();
         Consumption();
         FarmersGenerator();
         WarriorsGenerator();
+        Wave();
     }
 
 
@@ -161,25 +167,31 @@ public class MainScript : MonoBehaviour
         WaveText.text = Mathf.Round(WaveTimer).ToString();
         if (WaveTimer <= 0)
         {
+            // Шаг 1
+            EnemiesTotalDmg = Enemies * EnemyDmg;
+            EnemiesTotalHp = Enemies * EnemyHP;
+            WarriorsTotalDmg = Warriors * WarriorDmg;
+            WarriorsTotalHP = Warriors * WarriorHP;
+            FarmersTotalHP = Farmers * FarmerHP;
 
-            // ошибка тут ->
-            TotalDamage = Enemies * EnemiesLives;
-            while (TotalDamage == 0)
+            // Шаг 2
+            EnemiesTotalHp -= WarriorsTotalDmg;
+            WarriorsTotalHP -= EnemiesTotalDmg;
+
+            // Шаг 3
+            
+
+            if (WarriorsTotalHP <= 0)
             {
-                TotalDamage -= WarriorsLives;
-                Warriors--;
-                
-                if (Warriors == 0)
-                {
-                    TotalDamage -= FarmersLives;
-                    Farmers--;
-                    
-                    if (Farmers == 0)
-                    {
-                        SceneManager.LoadScene(2);
-                    }
-                }
+                FarmersTotalHP -= EnemiesTotalHp / EnemyHP * EnemyDmg;
+
+                if (FarmersTotalHP <= 0) { /* Loosing script */ }
+                else { /* Else script */ }
+            } else {
+                // 123123
             }
+
+            Warriors = WarriorsTotalHP / WarriorHP;
 
             WaveNumber++;
             Enemies++;

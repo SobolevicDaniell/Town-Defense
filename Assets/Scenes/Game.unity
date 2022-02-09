@@ -623,20 +623,24 @@ MonoBehaviour:
   ConsumptionImage: {fileID: 711922983}
   Wheats: 5
   Farmers: 1
-  Warriors: 0
-  Enemies: 1
   FarmerConsumption: 1
+  Warriors: 0
   WarriorConsumption: 2
+  WarriorDmg: 3
+  Enemies: 1
+  EnemyDmg: 3
+  EnemyHP: 3
+  MaxQueue: 5
   FarmerCost: 2
   WarriorsCost: 5
   FarmersProfit: 1
-  FarmersLives: 1
-  WarriorsLives: 3
-  EnemiesLives: 3
+  FarmerHP: 1
+  WarriorHP: 3
+  EnemysHP: 3
   WheatsTime: 5
   FarmersTime: 2
   WarriorsTime: 5
-  WaveTime: 180
+  WaveTime: 10
   ConsumptionTime: 30
 --- !u!1 &1032111076
 GameObject:
