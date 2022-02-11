@@ -20,7 +20,6 @@ public class MainScript : MonoBehaviour
     public Image WaveImage;
     public Text WaveText;
     public Text EnemiesText;
-    public Text WaveNumberText;
     public Image ConsumptionImage;
 
     public GameObject PopUp;
@@ -79,6 +78,8 @@ public class MainScript : MonoBehaviour
     float WaveTimer;
     float ConsumptionTimer;
 
+    bool IsMultiply;
+
     void Start()
     {
         WheatsTimer = WheatsTime;
@@ -88,10 +89,11 @@ public class MainScript : MonoBehaviour
         FarmersTimer = FarmersTime;
         WarriorsTimer = WarriorsTime;
 
+        IsMultiply = true;
+
         FarmersText.text = Mathf.Round(Farmers).ToString();
         WarriorsText.text = Mathf.Round(Warriors).ToString();
-        WaveNumberText.text = $"Wave №{WaveNumber}";
-        EnemiesText.text = $"Enemies next round: {Enemies}";
+        EnemiesText.text = $"Врагов на следующей волне: {Enemies}\nВолна: №{WaveNumber}";
     }
 
     void Update()
@@ -168,6 +170,7 @@ public class MainScript : MonoBehaviour
 
     void Wave()
     {
+        if (WaveNumber == 31) { TheEnd(0); }
         WaveTimer -= Time.deltaTime;
         WaveImage.fillAmount = WaveTimer / WaveTime;
         WaveText.text = Mathf.Round(WaveTimer).ToString();
@@ -202,9 +205,8 @@ public class MainScript : MonoBehaviour
                     if (EnemiesTotalHP % EnemyHP > 0) { EnemiesTotalHP += EnemiesTotalHP % EnemyHP; } // Округляем в бОльшую сторону.
                     FarmersTotalHP -= EnemiesTotalHP / EnemyHP * EnemyDmg;
 
-                    if (FarmersTotalHP % FarmerHP > 0) { FarmersTotalHP += FarmersTotalHP % FarmerHP; } // Округляем в бОльшую сторону.
-
                     if (FarmersTotalHP <= 0) { FarmersTotalHP = 0; TheEnd(1); break; }
+                    if (FarmersTotalHP % FarmerHP > 0) { FarmersTotalHP += FarmersTotalHP % FarmerHP; } // Округляем в бОльшую сторону.
                 }
             }
 
@@ -212,11 +214,14 @@ public class MainScript : MonoBehaviour
             Warriors = WarriorsTotalHP / WarriorHP;
 
             WaveNumber++;
-            Enemies *= 2;
+
+            if (IsMultiply) { Enemies *= 2; }
+            else { Enemies += 2; }
+            IsMultiply = !IsMultiply; 
+
             FarmersText.text = Mathf.Round(Farmers).ToString();
             WarriorsText.text = Mathf.Round(Warriors).ToString();
-            WaveNumberText.text = $"Волна: {WaveNumber}";
-            EnemiesText.text = $"Врагов: {Enemies}";
+            EnemiesText.text = $"Врагов на следующей волне: {Enemies}\nВолна: №{WaveNumber}";
 
             WaveTimer = WaveTime;
         }
