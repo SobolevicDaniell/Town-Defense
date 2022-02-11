@@ -23,6 +23,9 @@ public class MainScript : MonoBehaviour
     public Text WaveNumberText;
     public Image ConsumptionImage;
 
+    public GameObject PopUp;
+    public Text PopUpText;
+    public LeanTweenType easeType;
 
     // Начальные настройки
     public int Wheats = 5;
@@ -30,10 +33,7 @@ public class MainScript : MonoBehaviour
     public int FarmerConsumption = 1;
     public int Warriors = 0;
     public int WarriorConsumption = 2;
-    public int WarriorDmg = 3;
     public int Enemies = 1;
-    public int EnemyDmg = 3;
-    public int EnemyHP = 3;
     public int MaxQueue = 5;
 
     // Цены
@@ -46,7 +46,12 @@ public class MainScript : MonoBehaviour
     // Здоровье
     public int FarmerHP = 1;
     public int WarriorHP = 3;
-    public int EnemysHP = 3;
+    public int EnemyHP = 3;
+
+    // Дамаг
+    public int FarmerDmg = 1;
+    public int EnemyDmg = 3;
+    public int WarriorDmg = 3;
 
     // Время
     public float WheatsTime = 5;
@@ -61,10 +66,11 @@ public class MainScript : MonoBehaviour
     int WarriorsQueue;
     int WheatsToConsumption;
     int EnemiesTotalDmg;
-    int EnemiesTotalHp;
+    int EnemiesTotalHP;
     int WarriorsTotalDmg;
     int WarriorsTotalHP;
     int FarmersTotalHP;
+    int FarmersTotalDmg;
 
     // Флоаты
     float WheatsTimer;
@@ -167,39 +173,51 @@ public class MainScript : MonoBehaviour
         WaveText.text = Mathf.Round(WaveTimer).ToString();
         if (WaveTimer <= 0)
         {
-            // Шаг 1
-            EnemiesTotalDmg = Enemies * EnemyDmg;
-            EnemiesTotalHp = Enemies * EnemyHP;
-            WarriorsTotalDmg = Warriors * WarriorDmg;
+            EnemiesTotalHP = Enemies * EnemyHP;
             WarriorsTotalHP = Warriors * WarriorHP;
             FarmersTotalHP = Farmers * FarmerHP;
-
-            // Шаг 2
-            EnemiesTotalHp -= WarriorsTotalDmg;
-            WarriorsTotalHP -= EnemiesTotalDmg;
-
-            // Шаг 3
-            
-
-            if (WarriorsTotalHP <= 0)
+            while (true)
             {
-                FarmersTotalHP -= EnemiesTotalHp / EnemyHP * EnemyDmg;
+                if (WarriorsTotalHP < 0) { WarriorsTotalHP = 0; }
 
-                if (FarmersTotalHP <= 0) { /* Loosing script */ }
-                else { /* Else script */ }
-            } else {
-                // 123123
+                WarriorsTotalDmg = WarriorsTotalHP / WarriorHP * WarriorDmg;
+                FarmersTotalDmg = FarmersTotalHP / FarmerHP * FarmerDmg;
+
+                EnemiesTotalHP -= WarriorsTotalDmg;
+
+                if (EnemiesTotalHP <= 0) { break; } // Если мы убиваем сразу всех
+
+                if (EnemiesTotalHP % EnemyHP > 0) { EnemiesTotalHP += EnemiesTotalHP % EnemyHP; } // Округляем в бОльшую сторону.
+                EnemiesTotalDmg = EnemiesTotalHP / EnemyHP * EnemyDmg;
+
+                WarriorsTotalHP -= EnemiesTotalDmg;
+
+                if (WarriorsTotalHP <= 0)
+                {
+                    WarriorsTotalHP = 0;
+                    EnemiesTotalHP -= FarmersTotalDmg;
+
+                    if (EnemiesTotalHP <= 0) { break; } // Если мы убиваем сразу всех
+
+                    if (EnemiesTotalHP % EnemyHP > 0) { EnemiesTotalHP += EnemiesTotalHP % EnemyHP; } // Округляем в бОльшую сторону.
+                    FarmersTotalHP -= EnemiesTotalHP / EnemyHP * EnemyDmg;
+
+                    if (FarmersTotalHP % FarmerHP > 0) { FarmersTotalHP += FarmersTotalHP % FarmerHP; } // Округляем в бОльшую сторону.
+
+                    if (FarmersTotalHP <= 0) { FarmersTotalHP = 0; TheEnd(1); break; }
+                }
             }
 
+            Farmers = FarmersTotalHP / FarmerHP;
             Warriors = WarriorsTotalHP / WarriorHP;
 
             WaveNumber++;
-            Enemies++;
-            WarriorsText.text = Mathf.Round(Warriors).ToString();
+            Enemies *= 2;
             FarmersText.text = Mathf.Round(Farmers).ToString();
-            WaveNumberText.text = $"Wave №{WaveNumber}";
-            EnemiesText.text = $"Enemies: {Enemies}";
-            
+            WarriorsText.text = Mathf.Round(Warriors).ToString();
+            WaveNumberText.text = $"Волна: {WaveNumber}";
+            EnemiesText.text = $"Врагов: {Enemies}";
+
             WaveTimer = WaveTime;
         }
     }
@@ -217,9 +235,20 @@ public class MainScript : MonoBehaviour
                 if (Wheats > 0) { Wheats--; WheatsToConsumption -= 1; }
                 else if (Warriors > 0) { WheatsToConsumption -= WarriorConsumption; Warriors--; }
                 else if (Farmers > 0) { WheatsToConsumption -= FarmerConsumption; Farmers--; }
-                else { /* Loosing script */ }
+                else { TheEnd(1); }
             }
             ConsumptionTimer = ConsumptionTime;
         }
     }
+
+    void TheEnd(int a)
+    {
+        if (a == 1) { PopUpText.text = "You lost!"; }
+
+        PopUp.SetActive(true);
+        PopUp.transform.localScale = new Vector3(0, 0, 0);
+        LeanTween.scale(PopUp, new Vector3(1, 1, 1), 0.5f).setEase(easeType).setOnComplete(TimeScale);
+    }
+
+    void TimeScale() { Time.timeScale = 0; }
 }
